@@ -5,7 +5,7 @@ import Header from './Header';
 
 const Layout = ({ children }: Readonly<{ children: React.ReactNode; }>) => {
     return (
-        <ImageBackground style={styles.theme} source={require("../assets/background.jpg")}>
+        <ImageBackground style={styles.theme} source={require("../src/assets/background.jpg")}>
         
             <ScrollView style={{backgroundColor: "rgba(100, 164, 200, 0.6)",}}>
             <SafeAreaView style={styles.container}>

@@ -12,22 +12,26 @@ import database from '@react-native-firebase/database';
 // type safety
 type Display = NativeStackScreenProps<RootStackParamList, 'Display'>
 
-function submitReview(stars: number, comment: string) {
-  const newReference = database().ref('/testimonails').push();
-  newReference
-    .set({
-      stars:stars,
-      comment: comment,
-      author: "aslam",
-    })
-    .then(() => console.log('Data updated.'));
-}
 
 
-const DisplayResult = ({ route }: Display) => {
+
+const DisplayResult = ({ route, navigation }: Display) => {
+
+
 
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
+
+  function submitReview(stars: number, comment: string) {
+    const newReference = database().ref('/testimonails').push();
+    newReference
+      .set({
+        stars:stars,
+        comment: comment,
+        author: user,
+      })
+      .then(() => navigation.navigate("Home", {userId: user}));
+  }
 
   const handleStarPress = (id: number) => {
     setRating(id)
@@ -39,7 +43,7 @@ const DisplayResult = ({ route }: Display) => {
     setStars(updatedStars);
   };
 
-  const { uri, result } = route.params
+  const { uri, result, user } = route.params
   const [stars, setStars] = useState([
     { id: 1, filled: "white" },
     { id: 2, filled: "white" },
@@ -80,7 +84,7 @@ const DisplayResult = ({ route }: Display) => {
       <View style={{ alignItems: "flex-end" }}>
 
         <TouchableOpacity onPress={() => {
-          submitReview(rating, comment)
+          submitReview(rating, comment) 
         }} style={styles.button}>
           <Text style={{ color: "black" }}>Submit Feedback</Text>
         </TouchableOpacity>

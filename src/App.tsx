@@ -14,7 +14,7 @@ import Display from './screens/DisplayResult';
 export type RootStackParamList = {
   Home: {userId: string},
   Auth: undefined,
-  Display: {uri: string | undefined, result: string | undefined}
+  Display: {uri: string | undefined, result: string, user: string}
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

@@ -7,7 +7,7 @@ function Header()
         <View style={[styles.head, styles.center]}> 
             <Image
             style={styles.logo}
-            source={require('../assets/logo.png')}
+            source={require('../src/assets/logo.png')}
             />
             <Text style={styles.sectionTitle}>Quality Inspector</Text>
         </View>

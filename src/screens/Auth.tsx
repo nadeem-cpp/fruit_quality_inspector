@@ -42,32 +42,36 @@ const Auth = ({ navigation }: Auth) => {
     }
   }
   const login = () => {
-    auth()
-      .signInWithEmailAndPassword(email, password)
-      .then((userDetails) => {
-        setUser(userDetails.user['uid'])
-        // console.log("user login successfully!", userDetails.user)
-        navigate()
+    if (email != "" && password != "") {
+      setError('')
+      auth()
+        .signInWithEmailAndPassword(email, password)
+        .then((userDetails) => {
+          // setUser(userDetails.user['uid'])
+          setUser(email.split('@')[0])
+          navigate()
 
-      })
-      .catch(error => {
-        if (error.code === 'auth/email-already-in-use') {
-          setError('That email address is already in use!');
-        }
+        })
+        .catch(error => {
+          if (error.code === 'auth/invalid-email') {
+            setError('That email address is invalid!');
+          }
+          setError("invalid username, password")
+        })
 
-        if (error.code === 'auth/invalid-email') {
-          setError('That email address is invalid!');
-        }
-
-        console.error(error);
-      })
+    }
+    else {
+      setError("kindly fill the required fields")
+    }
   }
 
   const Signin = () => {
     auth()
       .createUserWithEmailAndPassword(email, password)
       .then((userDetails) => {
-        setUser(userDetails.user['uid'])
+        // setUser(userDetails.user['uid'])
+        setUser(email.split('@')[0])
+
         navigate()
       })
       .catch(error => {
@@ -90,18 +94,19 @@ const Auth = ({ navigation }: Auth) => {
   return (
     <Layout>
       <Animated.View style={[{ opacity: fadein, transform: [{ translateY: positionAnim }], }]}>
-        <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 20 }}>
+        <Text style={{ color: "red", fontSize: 18, textAlign: "center", padding: 10 }}>{error}</Text>
+        {/* <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 20 }}>
           <TouchableOpacity style={[styles.sso, { backgroundColor: "red" }]}>
             <Text style={{ fontSize: 40, color: "yellow" }}>G</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.sso, , { backgroundColor: "blue" }]}>
             <Text style={{ fontSize: 40, color: "white" }}>f</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
         <View style={{ flexDirection: "row", marginBottom: 15, justifyContent: "space-between", alignItems: "center" }}>
           <View style={styles.separator} />
-          <Text style={{ color: "black" }}>OR</Text>
+          {/* <Text style={{ color: "black" }}>OR</Text> */}
           <View style={styles.separator} />
         </View>
 
@@ -122,6 +127,9 @@ const Auth = ({ navigation }: Auth) => {
 
           <TouchableOpacity
             onPress={signup}
+            // onPress={()=>{
+            //   navigation.navigate("Home", {userId:"nadeem"})
+            // }}
             style={[styles.size, styles.buttonStyle]}>
             {log == true &&
               <Text style={styles.sectionTitle}>Login</Text>

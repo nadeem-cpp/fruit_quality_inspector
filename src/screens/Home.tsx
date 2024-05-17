@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import Review from '../../components/Review';
 import MainCard from '../../components/MainCard';
-import { launchImageLibrary } from 'react-native-image-picker'
+import { launchImageLibrary, launchCamera } from 'react-native-image-picker'
 
 import database from '@react-native-firebase/database';
 
@@ -18,46 +18,11 @@ import { RootStackParamList } from '../App';
 
 
 import Layout from '../../components/Layout';
+import Camera from '../../components/icons/Camera';
+import Download from '../../components/icons/Download';
 
 // type safety
 type Home = NativeStackScreenProps<RootStackParamList, 'Home'>
-
-
-const DATA = [
-  {
-    id: "1234",
-    stars: 2,
-    comment: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam consectetur, ipsum nec consequat porta, felis mauris commodo lorem, id aliquet felis nunc id purus. Duis vestibulum, justo nec vehicula euismod",
-    author: "nadeem"
-  },
-  {
-    id: "123",
-    stars: 5,
-    comment: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam consectetur, ipsum nec consequat porta, felis mauris commodo lorem, id aliquet felis nunc id purus. Duis vestibulum, justo nec vehicula euismod",
-    author: "nadeem"
-  },
-  {
-    id: "1235",
-    stars: 4,
-    comment: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam consectetur, ipsum nec consequat porta, felis mauris commodo lorem, id aliquet felis nunc id purus. Duis vestibulum, justo nec vehicula euismod",
-    author: "nadeem"
-  },
-  {
-    id: "1236",
-    stars: 3,
-    comment: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    author: "nadeem"
-  },
-  {
-    id: "1237",
-    stars: 3,
-    comment: "Lorem ipsum dolor sit amet",
-    author: "nadeem"
-  },
-]
-
-
-const dataAvailable = () => { if (DATA.length > 0) { return true } return false }
 
 
 function Home({ route, navigation }: Home): React.JSX.Element {
@@ -82,17 +47,46 @@ function Home({ route, navigation }: Home): React.JSX.Element {
 
 
   const [data, setData] = useState<{ id: string, stars: number, comment: string, author: string }[]>([]);
+  const [buttonsVisible, setButtonsVisible] = useState(false);
 
+  const dataAvailable = () => { if (data.length > 0) { return true } return false }
+
+  function handleCamera() {
+    launchCamera({ mediaType: 'photo' },
+      (res) => {
+        if (res.assets && res.assets.length > 0) {
+          const img = res.assets[0];
+          callModel(img.uri, img.type, img.fileName);
+          // navigation.navigate("Display", { uri: img.uri, result: "A" })
+        }
+      }
+    )
+  }
+
+  function handleGallery() {
+
+    launchImageLibrary({ mediaType: "photo" },
+      (res) => {
+        if (res.assets && res.assets.length > 0) {
+          const img = res.assets[0];
+          // callModel(img.uri, img.type, img.fileName);
+          navigation.navigate("Display", { uri: img.uri, result: "A", user:userId})
+        }
+      }
+    )
+
+  }
 
   async function callModel(uri: string | undefined, type: string | undefined, fileName: string | undefined) {
     try {
+      const ApiEndpoint: string = 'https://nadeem1001100.pythonanywhere.com/'
       const formData = new FormData();
       formData.append('image', {
         uri: uri,
         type: type,
         name: fileName,
       });
-      const response = await fetch('http://10.0.2.2:5000/process_image', {
+      const response = await fetch(ApiEndpoint + 'process_image', {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -104,7 +98,7 @@ function Home({ route, navigation }: Home): React.JSX.Element {
         throw new Error('Network response was not ok');
       }
       const data = await response.json();
-      navigation.navigate("Display", { uri: uri, result: data.grade })
+      navigation.navigate("Display", { uri: uri, result: data.grade, user:userId })
 
     } catch (error) {
       console.error('Error:', error);
@@ -138,17 +132,20 @@ function Home({ route, navigation }: Home): React.JSX.Element {
       </Layout>
 
       <View>
+        {buttonsVisible && (
+          <View>
+            <TouchableOpacity style={[styles.actionButtonCamera, styles.actionButton]} onPress={handleCamera}>
+              <Camera color={"white"} width={30} height={30} />
+
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.actionButtonGallery, styles.actionButton]} onPress={handleGallery}>
+              <Download color={"white"} width={28} height={28} />
+
+            </TouchableOpacity>
+          </View>
+        )}
         <TouchableOpacity style={styles.fab} onPress={() => {
-          launchImageLibrary({ mediaType: "photo" },
-            (res) => {
-              if (res.assets && res.assets.length > 0) {
-                // const uri =  res.assets[0].uri
-                const img = res.assets[0];
-                // callModel(img.uri, img.type, img.fileName);
-                navigation.navigate("Display", { uri: img.uri, result: "A" })
-              }
-            }
-          )
+          setButtonsVisible(!buttonsVisible)
         }
 
         }>
@@ -182,16 +179,31 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500"
   },
+  actionButtonCamera: {
+    right: 70,
+    bottom: 95,
+  },
+  actionButtonGallery: {
+    right: 100,
+    bottom: 20,
+  },
+  actionButton: {
+    position: "absolute",
+    backgroundColor: '#007bff',
+    padding: 10,
+    marginHorizontal: 8,
+    borderRadius: 30,
+  },
   fab: {
     position: 'absolute',
-    width: 60,
-    height: 60,
+    width: 75,
+    height: 75,
     alignItems: 'center',
     justifyContent: 'center',
     right: 20,
     bottom: 20,
     backgroundColor: '#007bff',
-    borderRadius: 30,
+    borderRadius: 40,
     elevation: 8,
   },
   text: {

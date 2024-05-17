@@ -5,11 +5,11 @@ function MainCard()
     return (
         <View style={styles.testimonial}>
             <View>
-                <CircularProgress percentage={70} color="#007bff"/>
+                <CircularProgress percentage={90} color="#007bff"/>
                 <Text>Model Accuracy</Text>
             </View>
             <View>
-                <CircularProgress percentage={50} color="#2EAD3D"/>
+                <CircularProgress percentage={55} color="#2EAD3D"/>
                 <Text>Positive Ratings</Text>
             </View>
             <View>
