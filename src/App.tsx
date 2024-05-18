@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 //Navigation
 import {NavigationContainer} from '@react-navigation/native'
@@ -9,6 +9,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import Home from './screens/Home';
 import Auth from './screens/Auth';
 import Display from './screens/DisplayResult';
+import SplashScreen from 'react-native-splash-screen'
+import { Platform } from 'react-native';
 
 
 export type RootStackParamList = {
@@ -21,6 +23,12 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 
 function App(): React.JSX.Element {
+  useEffect(() => {
+    if(Platform.OS === 'android')
+      {
+        SplashScreen.hide();
+      }
+  }, [])
 
   return (
     <NavigationContainer>

@@ -30,7 +30,7 @@ const Auth = ({ navigation }: Auth) => {
         duration: 1000,
         useNativeDriver: false
       }),
-    ]).start(() => navigation.navigate("Home", { userId: user }))
+    ]).start(() => navigation.replace("Home", { userId: user }))
   }
 
   const signup = () => {
